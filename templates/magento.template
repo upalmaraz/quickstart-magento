@@ -74,7 +74,9 @@
                         "MagentoLanguage",
                         "MagentoTimezone",
                         "MagentoReleaseMedia",
-                        "SSLCertificateId"
+                        "SSLCertificateId",
+                        "MagentoPublicKey",
+                        "MagentoPrivateKey"
                     ]
                 },
                 {
@@ -151,6 +153,12 @@
                 "KeyPairName": {
                     "default": "Key Name"
                 },
+                "MagentoPublicKey": {
+                    "default": "Magento public key"
+                },
+                "MagentoPrivateKey": {
+                    "default": "Magento private key"
+                },
                 "MagentoCurrency": {
                     "default": "Magento Currency"
                 },
@@ -211,6 +219,18 @@
             "ConstraintDescription": "Must be a valid IP range in x.x.x.x/x notation",
             "Description": "The CIDR IP range that is permitted to access Magento instances. Note: a value of 0.0.0.0/0 will allow access from ANY ip address",
             "Type": "String"
+        },
+        "MagentoPublicKey": {
+            "Description": "(Optional) Public key for Magento Marketplace to download Amazon Pay extension",
+            "Type": "String",
+            "NoEcho": "True",
+            "Default": ""
+        },
+        "MagentoPrivateKey": {
+            "Description": "(Optional) Private key for Magento Marketplace to download Amazon Pay extension",
+            "Type": "String",
+            "NoEcho": "True",
+            "Default": ""
         },
         "AdminEmail": {
             "Description": "Email of the Magento site administrator",
@@ -733,6 +753,12 @@
                             "SecurityGroupStack",
                             "Outputs.WebServerSecurityGroup"
                         ]
+                    },
+                    "MagentoPublicKey": {
+                        "Ref": "MagentoPublicKey"
+                    },
+                    "MagentoPrivateKey": {
+                        "Ref": "MagentoPrivateKey"
                     },
                     "NotificationEmail": {
                         "Ref": "NotificationEmail"

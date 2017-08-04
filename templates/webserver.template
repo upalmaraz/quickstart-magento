@@ -2,6 +2,16 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "Magento 2.1 Web Server Template",
     "Parameters": {
+        "MagentoPublicKey": {
+            "Description": "(Optional) Public key for Magento Marketplace to download Amazon Pay extension",
+            "Type": "String",
+            "NoEcho": "True"
+        },
+        "MagentoPrivateKey": {
+            "Description": "(Optional) Private key for Magento Marketplace to download Amazon Pay extension",
+            "Type": "String",
+            "NoEcho": "True"
+        },
         "AdminEmail": {
             "Description": "Email of the Magento site administrator",
             "Type": "String"
@@ -277,6 +287,26 @@
                     "Ref": "AWS::Region"
                 },
                 "us-gov-west-1"
+            ]
+        },
+        "DontInstallAmazonPay": {
+          	"Fn::Or": [
+                {
+                    "Fn::Equals": [
+                        {
+                            "Ref": "MagentoPublicKey"
+                        },
+                        ""
+                    ]
+                },
+                {
+                    "Fn::Equals": [
+                        {
+                            "Ref": "MagentoPrivateKey"
+                        },
+                        ""
+                    ]
+                }
             ]
         }
     },
@@ -772,6 +802,26 @@
                                 "group": "root",
                                 "authentication": "S3AccessCreds"
                             },
+                            "/tmp/auth.json": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "{\n",
+                                            "  \"http-basic\": {\n",
+                                            "    \"repo.magento.com\": {\n",
+                                            "        \"username\": \"",{ "Ref": "MagentoPublicKey" },"\",\n",
+                                            "        \"password\": \"",{ "Ref": "MagentoPrivateKey" },"\"\n",
+                                            "     }\n",
+                                            "  }\n",
+                                            "}"
+                                        ]
+                                    ]
+                                },
+                                "mode": "000400",
+                                "owner": "root",
+                                "group": "root"
+                            },
                             "/tmp/params.txt": {
                                 "content": {
                                     "Fn::Join": [
@@ -871,6 +921,15 @@
                                             "MagentoTimezone|",
                                             {
                                                 "Ref": "MagentoTimezone"
+                                            },
+                                            "\n",
+                                            "DontInstallAmazonPay|",
+                                            {
+                                                "Fn::If": [
+                                                    "DontInstallAmazonPay",
+                                                    "TRUE",
+                                                    "FALSE"
+                                                ]
                                             },
                                             "\n"
                                         ]
